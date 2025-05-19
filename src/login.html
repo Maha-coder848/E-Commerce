@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authentication</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .strength-bar {
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    .strength-weak {
+      background-color: red;
+    }
+
+    .strength-medium {
+      background-color: yellow;
+    }
+
+    .strength-strong {
+      background-color: green;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-4xl flex">
+    <!-- Image -->
+    <div class="w-1/2 mr-8 flex items-center justify-center">
+      <img src="/img/wallpaper/p4.avif" alt="Auth Image" class="w-full h-auto max-h-96 object-cover rounded" />
+    </div>
+
+    <!-- Form Section -->
+    <div class="w-1/2 flex flex-col justify-between">
+      <div id="forms" class="h-full flex flex-col justify-between">
+        <!-- Signup Form -->
+        <form id="signupForm" class="space-y-4 h-full flex flex-col justify-between">
+          <h2 class="text-2xl font-bold text-center">Sign Up</h2>
+          <div>
+            <input type="text" id="signupName" placeholder="Full Name" class="w-full border p-2 rounded" required />
+            <div id="nameError" class="error-message"></div>
+          </div>
+          <div>
+            <input type="email" id="signupEmail" placeholder="Email" class="w-full border p-2 rounded" required />
+            <div id="emailError" class="error-message"></div>
+          </div>
+          <div class="relative">
+            <input type="password" id="signupPassword" placeholder="Password" class="w-full border p-2 rounded pr-16" required />
+            <button type="button" onclick="togglePassword('signupPassword')" class="absolute right-3 top-2 text-blue-500 text-sm">Show</button>
+          </div>
+          <div class="strength-bar mt-2" id="signupStrengthBar"></div>
+          <div id="passwordError" class="error-message"></div>
+          <button type="submit" class="w-full bg-green-600 text-white p-2 rounded" id="signupSubmit">Sign Up</button>
+          <p class="text-sm text-center">Already have an account? <a href="#" onclick="switchForm('loginForm')" class="text-blue-500">Login</a></p>
+        </form>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4 hidden">
+          <h2 class="text-2xl font-bold text-center">Login</h2>
+          <div>
+            <input type="email" id="loginEmail" placeholder="Email" class="w-full border p-2 rounded" required />
+            <div id="loginEmailError" class="error-message"></div>
+          </div>
+          <div class="relative">
+            <input type="password" id="loginPassword" placeholder="Password" class="w-full border p-2 rounded pr-16" required />
+            <button type="button" onclick="togglePassword('loginPassword')" class="absolute right-3 top-2 text-blue-500 text-sm">Show</button>
+          </div>
+          <div id="loginPasswordError" class="error-message"></div>
+          <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded">Login</button>
+          <p class="text-sm text-center"><a href="#" onclick="switchForm('forgotForm')" class="text-blue-500">Forgot Password?</a></p>
+          <p class="text-sm text-center">Don't have an account? <a href="#" onclick="switchForm('signupForm')" class="text-blue-500">Sign Up</a></p>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form id="forgotForm" class="space-y-4 hidden">
+          <h2 class="text-2xl font-bold text-center">Forgot Password</h2>
+          <input type="email" id="forgotEmail" placeholder="Email" class="w-full border p-2 rounded" required />
+          <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded">Send Reset Link</button>
+          <p class="text-sm text-center"><a href="#" onclick="switchForm('loginForm')" class="text-blue-500">Back to Login</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle Password Visibility
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    // Switch Forms
+    function switchForm(formId) {
+      document.querySelectorAll("#forms form").forEach(form => {
+        form.classList.add("hidden");
+      });
+      document.getElementById(formId).classList.remove("hidden");
+      clearErrors();
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(error => error.textContent = "");
+    }
+
+    // Password Strength Bar
+    document.getElementById("signupPassword").addEventListener("input", function () {
+      const strengthBar = document.getElementById("signupStrengthBar");
+      const password = this.value;
+      let strength = 0;
+
+      if (password.length >= 6) strength++;
+      if (/[A-Z]/.test(password)) strength++;
+      if (/[a-z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+      strengthBar.className = "strength-bar mt-2";
+      if (strength <= 2) {
+        strengthBar.classList.add("strength-weak");
+      } else if (strength === 3 || strength === 4) {
+        strengthBar.classList.add("strength-medium");
+      } else {
+        strengthBar.classList.add("strength-strong");
+      }
+    });
+
+    // Save signup credentials (in localStorage)
+    function saveSignupData(email, password) {
+      localStorage.setItem('signupEmail', email);
+      localStorage.setItem('signupPassword', password);
+    }
+
+    // Signup Validation and Save Credentials
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+
+      let valid = true;
+
+      if (!name) {
+        document.getElementById('nameError').textContent = 'Name is required.';
+        valid = false;
+      } else {
+        document.getElementById('nameError').textContent = '';
+      }
+
+      if (!email) {
+        document.getElementById('emailError').textContent = 'Email is required.';
+        valid = false;
+      } else {
+        document.getElementById('emailError').textContent = '';
+      }
+
+      if (!password) {
+        document.getElementById('passwordError').textContent = 'Password is required.';
+        valid = false;
+      } else {
+        document.getElementById('passwordError').textContent = '';
+      }
+
+      if (valid) {
+        // Save signup credentials
+        saveSignupData(email, password);
+
+        alert('Signup successful! Please login with your credentials.');
+        // Switch to login form after signup
+        switchForm('loginForm');
+
+        // Clear signup form inputs
+        this.reset();
+        document.getElementById('signupStrengthBar').className = "strength-bar mt-2"; // reset strength bar
+      }
+    });
+
+    // Login Validation and Check Credentials
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      let valid = true;
+
+      if (!email) {
+        document.getElementById('loginEmailError').textContent = 'Email is required.';
+        valid = false;
+      } else {
+        document.getElementById('loginEmailError').textContent = '';
+      }
+
+      if (!password) {
+        document.getElementById('loginPasswordError').textContent = 'Password is required.';
+        valid = false;
+      } else {
+        document.getElementById('loginPasswordError').textContent = '';
+      }
+
+      if (valid) {
+        // Get saved signup credentials
+        const savedEmail = localStorage.getItem('signupEmail');
+        const savedPassword = localStorage.getItem('signupPassword');
+
+        // Check if login matches signup
+        if (email === savedEmail && password === savedPassword) {
+          alert('Login successful!');
+          // Save user initial for demonstration
+          const firstLetter = email.charAt(0).toUpperCase();
+          localStorage.setItem('userInitial', firstLetter);
+
+          // Redirect to index.html or any other page
+          window.location.href = 'index.html';
+        } else {
+          alert('Invalid email or password. Please try again.');
+        }
+      }
+    });
+
+    // Forgot Password
+    document.getElementById('forgotForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      if (!email) {
+        alert('Email is required to reset password.');
+      } else {
+        alert('Reset link sent to your email.');
+      }
+    });
+
+    // Real-time Error Removal & Dependency Checking
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', function () {
+        const errorId = `${this.id}Error`;
+        const errorDiv = document.getElementById(errorId);
+        if (errorDiv) errorDiv.textContent = "";
+
+        // Dependent validation messages
+        if (this.id === 'signupEmail') {
+          const name = document.getElementById('signupName').value.trim();
+          if (!name) {
+            document.getElementById('nameError').textContent = 'Name is required.';
+          }
+        }
+
+        if (this.id === 'signupPassword') {
+          const email = document.getElementById('signupEmail').value.trim();
+          if (!email) {
+            document.getElementById('emailError').textContent = 'Email is required.';
+          }
+        }
+
+        if (this.id === 'loginPassword') {
+          const email = document.getElementById('loginEmail').value.trim();
+          if (!email) {
+            document.getElementById('loginEmailError').textContent = 'Email is required.';
+          }
+        }
+      });
+
+      input.addEventListener('input', function () {
+        const errorId = `${this.id}Error`;
+        const errorDiv = document.getElementById(errorId);
+        if (this.value.trim() && errorDiv) {
+          errorDiv.textContent = '';
+        }
+
+        // Clear dependent error if related field is now filled
+        if (this.id === 'signupName') {
+          document.getElementById('nameError').textContent = '';
+        }
+        if (this.id === 'signupEmail') {
+          document.getElementById('emailError').textContent = '';
+        }
+        if (this.id === 'loginEmail') {
+          document.getElementById('loginEmailError').textContent = '';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

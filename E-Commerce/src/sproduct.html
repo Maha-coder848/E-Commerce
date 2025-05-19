@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/logo1.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-poppins bg-gray-100">
+
+    <section id="prodetails" class="flex py-12 px-6">
+        <!-- Image Section -->
+        <div class="w-1/2">
+            <!-- Main Image with increased size -->
+            <img src="/img/product1/f1.webp" id="main-img" alt="Product Image" class="w-[500px] h-[500px] object-cover rounded-lg">
+            
+            <!-- Small Images -->
+            <div class="flex mt-4 space-x-2">
+                <div class="flex-shrink-0">
+                    <img src="/img/product1/f1.webp" class="small-img cursor-pointer border-2 border-transparent hover:border-orange-500 rounded w-[80px] h-[80px]" alt="Small Image 1" onclick="changeImage(this)">
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="/img/product1/f2.webp" class="small-img cursor-pointer border-2 border-transparent hover:border-orange-500 rounded w-[80px] h-[80px]" alt="Small Image 2" onclick="changeImage(this)">
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="/img/product1/f3.webp" class="small-img cursor-pointer border-2 border-transparent hover:border-orange-500 rounded w-[80px] h-[80px]" alt="Small Image 3" onclick="changeImage(this)">
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="/img/product1/f4.webp" class="small-img cursor-pointer border-2 border-transparent hover:border-orange-500 rounded w-[80px] h-[80px]" alt="Small Image 4" onclick="changeImage(this)">
+                </div>
+            </div>
+        </div>
+    
+        <!-- Text Section -->
+        <div class="w-1/2 pl-8">
+            <h6 class="text-gray-600">Home / Tops & Kurthis</h6>
+            <h4 id="product-name" class="text-2xl font-semibold mt-2">Women's Fashion Tops & Kurthis</h4>
+            <h2 id="product-price" class="text-xl text-red-500 mt-2">Rs 139.00</h2>
+    
+            <div class="mt-4">
+                <select id="size" class="border border-gray-300 rounded px-4 py-2 w-full">
+                    <option>Select size</option>
+                    <option>XL</option>
+                    <option>XXL</option>
+                    <option>Small</option>
+                    <option>Large</option>
+                </select>
+            </div>
+    
+            <div class="flex mt-4 items-center">
+                <input type="number" id="quantity" value="1" min="1" class="border border-gray-300 rounded w-16 p-2 mr-4">
+                <button onclick="addToCart()" class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 focus:outline-none">
+                    Add to cart
+                </button>
+            </div>
+    
+            <div id="cart-message" class="mt-4"></div>
+    
+            <h4 class="mt-8 font-semibold">Product Details</h4>
+            <p class="text-gray-700 mt-2">
+                <b>Style:</b> Kurthis are typically knee-length or longer tunic-like tops, often paired with leggings or palazzos.<br>
+                <b>Fabric:</b> They are made from a variety of fabrics, including cotton, silk, and synthetic blends.<br>
+                <b>Designs:</b> Kurthis come in various designs, from plain and simple to intricately embroidered or embellished styles.<br>
+                <b>Necklines:</b> Round, V-neck, or square necklines.<br>
+                <b>Sleeves:</b> Can be short, three-quarter, or long sleeves.<br>
+                <b>Prints:</b> Floral, geometric, block prints, and tie-dye patterns are popular.
+            </p>
+        </div>
+    </section>
+    <script src="script.js">
+       
+    </script>
+</body>
+</html>

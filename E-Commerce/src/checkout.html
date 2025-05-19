@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Checkout</title>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">🧾 Checkout</h2>
+    <div id="item-summary" class="mb-6"></div>
+    <form onsubmit="placeOrder(event)">
+      <input type="text" placeholder="Name" class="w-full p-2 mb-3 border rounded" required />
+      <input type="text" placeholder="Address" class="w-full p-2 mb-3 border rounded" required />
+      <input type="text" placeholder="City" class="w-full p-2 mb-3 border rounded" required />
+      <input type="text" placeholder="Pincode" class="w-full p-2 mb-3 border rounded" required />
+      <input type="text" placeholder="Card Number" class="w-full p-2 mb-3 border rounded" required />
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Place Order</button>
+    </form>
+    <div id="order-success" class="mt-4 text-green-700 font-bold hidden">🎉 Order placed successfully!</div>
+  </div>
+
+  <script>
+    const item = JSON.parse(localStorage.getItem('buyNowItem'));
+    const summary = document.getElementById('item-summary');
+    if (item) {
+      summary.innerHTML = `
+        <div class="flex gap-4 items-center">
+          <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded" />
+          <div>
+            <p class="font-bold">${item.name}</p>
+            <p class="text-sm text-gray-600">Size: ${item.size}</p>
+            <p class="text-sm">Qty: ${item.quantity}</p>
+            <p class="text-sm font-semibold">Price: ${item.price}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function placeOrder(e) {
+      e.preventDefault();
+      localStorage.removeItem('buyNowItem');
+      document.querySelector('form').classList.add('hidden');
+      document.getElementById('order-success').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

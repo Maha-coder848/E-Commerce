@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Your Cart</title>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+
+  <!-- Cart Container -->
+  <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6">🛒 Your Cart</h2>
+    <div id="cart-items" class="space-y-4"></div>
+
+    <div id="cart-total" class="mt-6 text-right">
+      <p class="text-xl font-semibold">Total: <span id="total-price">Rs 0.00</span></p>
+    </div>
+
+    <div class="flex justify-between mt-6 space-x-4">
+      <button onclick="clearCart()" class="w-1/2 bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
+        Clear Cart
+      </button>
+      <button onclick="buyAll()" class="w-1/2 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">
+        Buy All
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal (Login/Signup) -->
+  <div id="login-signup-modal" class="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
+      <h3 class="text-xl font-semibold mb-4">Sign In / Sign Up</h3>
+      <button onclick="closeModal()" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">Close</button>
+    </div>
+  </div>
+
+  <script>
+function displayCartItems() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartContainer = document.getElementById('cart-items');
+    const totalPriceEl = document.getElementById('total-price');
+    cartContainer.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+      cartContainer.innerHTML = '<p class="text-center text-gray-500">Your cart is empty.</p>';
+      totalPriceEl.textContent = 'Rs 0.00';
+      return;
+    }
+
+    cart.forEach((item, idx) => {
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+      total += price * item.quantity;
+
+      const div = document.createElement('div');
+      div.className = 'flex justify-between items-center border-b pb-4';
+
+      div.innerHTML = `
+        <div class="flex items-center gap-4">
+          <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+          <div>
+            <p class="font-semibold">${item.name}</p>
+            <p class="text-sm text-gray-600">Size: ${item.size}</p>
+            <p class="text-sm text-gray-600">Qty: ${item.quantity}</p>
+            <p class="text-sm font-medium text-black">Price: ${item.price}</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-2">
+          <button onclick="buyNow(${idx})" class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Buy Now</button>
+          <button onclick="removeItem(${idx})" class="text-red-600 text-lg hover:text-red-800">&times;</button>
+        </div>
+      `;
+
+      cartContainer.appendChild(div);
+    });
+
+    totalPriceEl.textContent = `Rs ${total.toFixed(2)}`;
+  }
+
+  function removeItem(index) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    displayCartItems();
+  }
+
+  function clearCart() {
+    localStorage.removeItem('cart');
+    displayCartItems();
+  }
+
+  function isLoggedIn() {
+    const signInBtnText = localStorage.getItem('signInBtnText') || '';
+    return signInBtnText.length >= 1 && signInBtnText.length <= 2;
+  }
+
+  function buyNow(index) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (!cart[index]) return;
+
+    if (isLoggedIn()) {
+      localStorage.setItem('buyNowItem', JSON.stringify(cart[index]));
+      window.location.href = 'checkout.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  }
+
+  function buyAll() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (!cart.length) {
+      alert('Cart is empty.');
+      return;
+    }
+
+    if (isLoggedIn()) {
+      localStorage.setItem('buyNowItem', JSON.stringify(cart));
+      window.location.href = 'checkout.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  }
+
+  window.onload = displayCartItems;
+
+  </script>
+
+</body>
+</html>
